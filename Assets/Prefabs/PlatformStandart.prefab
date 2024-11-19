@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2796676193233455950}
   - component: {fileID: 8562511568351607802}
   - component: {fileID: 4511826552265347608}
-  - component: {fileID: 8143661243655476154}
+  - component: {fileID: 7449970442417772684}
   m_Layer: 3
   m_Name: PlatformStandart
   m_TagString: Ground
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c47dcbfcf1c766449b0760f7ab7c6a3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &8143661243655476154
+--- !u!61 &7449970442417772684
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -204,7 +204,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 1}
+  m_Offset: {x: 0, y: 1.22}
   m_SpriteTilingProperty:
     border: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
     pivot: {x: 0.5, y: 0.5}
@@ -215,5 +215,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5, y: 0.42}
+  m_Size: {x: 5, y: 1}
   m_EdgeRadius: 0
