@@ -7,9 +7,23 @@ public class Rope : MonoBehaviour
 	[SerializeField] GameObject pillar1;
 	[SerializeField] GameObject pillar2;
 	[SerializeField] GameObject ropeLine;
+	public Vector2 RopeBeginPoint => pillar1.transform.position;
+	public Vector2 RopeEndPoint => pillar2.transform.position;
+	public float RopeAngle => Vector2.Angle(RopeBeginPoint, RopeEndPoint);
+
+	SliderJoint2D joint;
 	private void Start()
 	{
+		joint = GetComponentInChildren<SliderJoint2D>();
 		SetUpRope();
+	}
+	public void AttachRigidBody(Rigidbody2D Rigidbody)
+	{
+		joint.connectedBody = Rigidbody;
+	}
+	public void DeattachRigidBody()
+	{
+		joint.connectedBody = null;
 	}
 	public void SetUpRope(GameObject platformBegin = null, GameObject platformEnd = null)
 	{
@@ -31,5 +45,14 @@ public class Rope : MonoBehaviour
 		var _edgeColl = ropeLine.GetComponent<EdgeCollider2D>();
 		_edgeColl.points = new Vector2[] { pillar1.transform.localPosition, pillar2.transform.localPosition };
 
+		if (joint == null)
+		{
+			joint = GetComponentInChildren<SliderJoint2D>();
+		}
+		joint.angle = RopeAngle;
+		joint.limits = new JointTranslationLimits2D()
+		{
+			min = 0, max = Vector2.Distance(pillar1.transform.localPosition, pillar1.transform.localPosition)
+		};
 	}
 }

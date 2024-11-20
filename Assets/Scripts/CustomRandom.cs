@@ -11,7 +11,7 @@ public static class Random
 	public static bool FullRandom(float BaseChance)
 	{
 		var roll = UnityEngine.Random.Range(0f, 100f);
-		if (roll <= BaseChance)	Debug.Log(roll);
+
 		return roll <= BaseChance;
 	}
 }
