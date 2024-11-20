@@ -26,12 +26,12 @@ public class GameManager : MonoBehaviour
 		if (Random.FullRandom(ropeChance))
 		{
 			_newPlatformX = CurrentPlatform.transform.position.x + UnityEngine.Random.Range(50, 100);
-			_newPlatformY = UnityEngine.Random.Range(10, -20);
+			_newPlatformY = CurrentPlatform.transform.position.y + UnityEngine.Random.Range(10f, -10f);
 		}
 		else
 		{
 			_newPlatformX = CurrentPlatform.transform.position.x + UnityEngine.Random.Range(10, 18);
-			_newPlatformY = UnityEngine.Random.Range(-2f, -10f);
+			_newPlatformY = CurrentPlatform.transform.position.y + UnityEngine.Random.Range(2f, -2f);
 		}
 
 		var _newPlatformPoint = new Vector3(_newPlatformX, _newPlatformY);
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
 
 		PlatformCreated?.Invoke(this, new UniversalEventArgs<GameObject>() { Name = "New Platform", CustomVariable = _newPlatform });
 		
-		if (Vector2.Distance(_newPlatform.transform.position, CurrentPlatform.transform.position) > 20 )
+		if (Vector2.Distance(_newPlatform.transform.position, CurrentPlatform.transform.position) > 40 )
 		{
 			var _newRope = Instantiate(ropePrefab,
 				new Vector3(0,0),

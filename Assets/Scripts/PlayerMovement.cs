@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,7 +36,12 @@ public class PlayerMovement : MonoBehaviour
 
 	//ui
 	[SerializeField] Slider slider;
-	// Start is called before the first frame update
+
+	//Rope
+	bool IsOnRope { get; set; }
+
+	//events
+	public event EventHandler<UniversalEventArgs<PlayerMovement>> Jumped;
 	void Start()
 	{
 		playerRB = GetComponent<Rigidbody2D>();
@@ -43,8 +49,6 @@ public class PlayerMovement : MonoBehaviour
 
 		StartGroundedCheck();
 	}
-
-	// Update is called once per frame
 	void Update()
 	{
 		if(Input.GetButtonUp("Jump"))
@@ -82,19 +86,23 @@ public class PlayerMovement : MonoBehaviour
 
 	void Jump()
 	{
-		if (!IsGrounded) return;
+		if (!IsGrounded && !IsOnRope) return;
+
+		Jumped?.Invoke(this, new UniversalEventArgs<PlayerMovement>() { CustomVariable = this, Name = "PlayerMovement" });
 
 		playerRB.AddForce(new Vector2(0, JumpHeight), ForceMode2D.Impulse);
 
 		currentJumpPower = 0;
 		jumpMultiplyer = minJumpPower;
+
+		IsOnRope = false;
 		UpdateUi();
 	}
 
 	async void StartGroundedCheck()
 	{
 		float _downScale = 0.8f;
-		while (true)
+		while (!gameObject.IsDestroyed())
 		{
 			RaycastHit2D _hit = Physics2D.BoxCast(transform.position, _downScale * transform.localScale, 0, -1 * transform.up, transform.localScale.y + 0.1f, groundLayer);
 
@@ -104,7 +112,19 @@ public class PlayerMovement : MonoBehaviour
 			await Task.Delay(100);
 		}
 	}
+	void HopOnRope(Rope Rope)
+	{
+		IsOnRope = true;
+		speedMultiplier = 2f;
+		Rope.AttachRigidBody(playerRB);
 
+		Jumped += (s, e) =>
+		{
+			speedMultiplier = 1f;
+			Rope.DeattachRigidBody();
+		};
+
+	}
 	void UpdateUi()
 	{
 		slider.value = currentJumpPower;
@@ -115,6 +135,6 @@ public class PlayerMovement : MonoBehaviour
 
 		if (collision.gameObject.CompareTag("Ground")) playerScore.ScoreUp();
 
-		if (collision.gameObject.CompareTag("Rope")) return; 
+		if (collision.gameObject.CompareTag("Rope")) HopOnRope(collision.gameObject.GetComponentInParent<Rope>());
 	}
 }
