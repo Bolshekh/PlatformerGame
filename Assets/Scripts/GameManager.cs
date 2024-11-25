@@ -14,10 +14,12 @@ public class GameManager : MonoBehaviour
 	public event EventHandler<UniversalEventArgs<GameObject>> RopeCreated;
 
 	[SerializeField] float ropeChance = 10f;
-	// Start is called before the first frame update
+
+	[SerializeField] GameObject GameOverPanel;
 	void Start()
 	{
 		Instance = this;
+		Time.timeScale = 1f;
 	}
 	public void CreateNewPlatform(GameObject CurrentPlatform)
 	{
@@ -56,6 +58,8 @@ public class GameManager : MonoBehaviour
 	public void GameOver()
 	{
 		//TODO: GAME OVER
+		Time.timeScale = 0.1f;
+		GameOverPanel.SetActive(true);
 		Debug.Log("GAME OVER");
 	}
 }
