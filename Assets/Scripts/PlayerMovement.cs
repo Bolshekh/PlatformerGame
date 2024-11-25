@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
-using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
 	bool IsOnRope { get; set; }
 
 	//events
-	public event EventHandler<UniversalEventArgs<PlayerMovement>> Jumped;
+	public event EventHandler<UniversalEventArgs<PlayerMovement>> PlayerJumped;
 	void Start()
 	{
 		playerRB = GetComponent<Rigidbody2D>();
@@ -88,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (!IsGrounded && !IsOnRope) return;
 
-		Jumped?.Invoke(this, new UniversalEventArgs<PlayerMovement>() { CustomVariable = this, Name = "PlayerMovement" });
+		PlayerJumped?.Invoke(this, new UniversalEventArgs<PlayerMovement>() { CustomVariable = this, Name = "PlayerMovement" });
 
 		playerRB.AddForce(new Vector2(0, JumpHeight), ForceMode2D.Impulse);
 
@@ -118,7 +117,7 @@ public class PlayerMovement : MonoBehaviour
 		speedMultiplier = 2f;
 		Rope.AttachRigidBody(playerRB);
 
-		Jumped += (s, e) =>
+		PlayerJumped += (s, e) =>
 		{
 			speedMultiplier = 1f;
 			Rope.DeattachRigidBody();
@@ -131,7 +130,11 @@ public class PlayerMovement : MonoBehaviour
 	}
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (collision.gameObject.CompareTag("Death")) GameManager.Instance.GameOver();
+		if (collision.gameObject.CompareTag("Death") && !IsOnRope)
+		{
+			GlobalScore.SetScore(playerScore.Score);
+			GameManager.Instance.GameOver();
+		}
 
 		if (collision.gameObject.CompareTag("Ground")) playerScore.ScoreUp();
 
