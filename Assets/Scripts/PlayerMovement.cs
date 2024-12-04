@@ -41,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
 
 	//events
 	public event EventHandler<UniversalEventArgs<PlayerMovement>> PlayerJumped;
+	public event EventHandler<UniversalEventArgs<bool>> GroundCheckChanged;
 	void Start()
 	{
 		playerRB = GetComponent<Rigidbody2D>();
@@ -103,10 +104,13 @@ public class PlayerMovement : MonoBehaviour
 		float _downScale = 0.8f;
 		while (!gameObject.IsDestroyed())
 		{
+			var _prevState = IsGrounded;
 			RaycastHit2D _hit = Physics2D.BoxCast(transform.position, _downScale * transform.localScale, 0, -1 * transform.up, transform.localScale.y + 0.1f, groundLayer);
 
 			if (_hit.collider != null) IsGrounded = true;
 			else IsGrounded = false;
+
+			if (_prevState != IsGrounded) GroundCheckChanged?.Invoke(this, new UniversalEventArgs<bool>() { CustomVariable = IsGrounded, Name = "IsGrounded" });
 
 			await Task.Delay(100);
 		}

@@ -2,7 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class UniversalEventArgs<T> : EventArgs where T : class
+public class UniversalEventArgs<T> : EventArgs 
+	where T : notnull
 {
 	public string Name { get; set; }
 	public T CustomVariable { get; set; }
