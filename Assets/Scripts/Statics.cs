@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
@@ -24,6 +25,22 @@ public static class GlobalScore
 		if(Score > GlobalScore.Score)
 		{
 			GlobalScore.Score = Score;
+		}
+	}
+}
+
+public static class GlobalAudio
+{
+	public static event EventHandler<UniversalEventArgs<float>> AudioChange;
+
+	private static float vol;
+	public static float AudioVolume
+	{
+		get => vol;
+		set
+		{
+			vol = value;
+			AudioChange?.Invoke(null, new UniversalEventArgs<float>() { Name = "AudioVolume", CustomVariable = vol });
 		}
 	}
 }
