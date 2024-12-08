@@ -7,9 +7,9 @@ using UnityEngine.UI;
 public class Parallax : MonoBehaviour
 {
 	[SerializeField] List<RawImage> layers;
-	[SerializeField] float speed;
+	[SerializeField] float speed = 0.005f;
 	[SerializeField] Transform followEntity;
-	[SerializeField] float speedDecrease;
+	[Range(0.0f,1.0f)][SerializeField] float speedDecrease = 0.5f;
 	// Update is called once per frame
 	void Update()
 	{
