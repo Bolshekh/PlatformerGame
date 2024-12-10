@@ -15,24 +15,5 @@ public class PlayerAudio : MonoBehaviour
 		playerMovement = GetComponent<PlayerMovement>();
 
 		playerMovement.PlayerJumped += (s, e) => playerAllAudio.Find(s => s.clip.name == "Jump2").Play();
-
-		GlobalAudio.AudioChange += (s, e) => AudioUpdate();
-
-		AudioUpdate();
-	}
-	void AudioUpdate()
-	{
-		foreach(var a in playerAllAudio)
-		{
-			switch (a.clip.name)
-			{
-				case "music":
-					a.volume = GlobalAudio.AudioVolume * 0.05f;
-					break;
-				default:
-					a.volume = GlobalAudio.AudioVolume;
-					break;
-			}
-		};
 	}
 }

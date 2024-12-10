@@ -10,21 +10,21 @@ public class PlayerMovement : MonoBehaviour
 {
 	//basic
 	Rigidbody2D playerRB;
-	[SerializeField] LayerMask groundLayer;
 	PlayerScore playerScore;
+	public GroundedCheck groundedCheck { get; internal set; }
 
-	public bool IsGrounded { get; set; }
-
-	//jump
-	[SerializeField] float jumpHeight;
-	[SerializeField] float jumpMultiplyer;
-	public float JumpHeight => jumpHeight * jumpMultiplyer;
+	public bool IsGrounded => groundedCheck.IsGrounded;
+	public bool IsDead { get; internal set; } = false;
 
 	//speed
 	[SerializeField] float speed;
 	[SerializeField] float speedMultiplier;
 	public float Speed => speed * speedMultiplier;
 
+	//jump
+	[SerializeField] float jumpHeight;
+	[SerializeField] float jumpMultiplyer;
+	public float JumpHeight => jumpHeight * jumpMultiplyer;
 	//jump charge
 	float currentJumpPower;
 	[SerializeField] float jumpChargeSpeed = 0.5f;
@@ -41,13 +41,18 @@ public class PlayerMovement : MonoBehaviour
 
 	//events
 	public event EventHandler<UniversalEventArgs<PlayerMovement>> PlayerJumped;
-	public event EventHandler<UniversalEventArgs<bool>> GroundCheckChanged;
+	//menu
+	public bool IsInMenu { get; internal set; }
+	[SerializeField] GameObject ExitMenu;
 	void Start()
 	{
 		playerRB = GetComponent<Rigidbody2D>();
 		playerScore = GetComponent<PlayerScore>();
+		groundedCheck = GetComponent<GroundedCheck>();
 
-		StartGroundedCheck();
+		HideMenu();
+
+		IsDead = false;
 	}
 	void Update()
 	{
@@ -62,8 +67,32 @@ public class PlayerMovement : MonoBehaviour
 		{
 			ChargeJump();
 		}
-	}
 
+		if (Input.GetButtonDown("Cancel"))
+		{
+			ChangeCursorVisibility();
+		}
+	}
+	public void HideMenu()
+	{
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+		if (!IsDead) ExitMenu.SetActive(false);
+		IsInMenu = false;
+	}
+	public void ShowMenu()
+	{
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		if (!IsDead) ExitMenu.SetActive(true);
+		IsInMenu = true;
+	}
+	public void ChangeCursorVisibility()
+	{
+		GlobalScore.SetScore(playerScore.Score);
+		if (IsInMenu) HideMenu();
+		else ShowMenu();
+	}
 	void Move()
 	{
 		Vector2 _dir = new Vector2(Speed * Input.GetAxis("Horizontal"), playerRB.velocity.y);
@@ -98,23 +127,6 @@ public class PlayerMovement : MonoBehaviour
 		IsOnRope = false;
 		UpdateUi();
 	}
-
-	async void StartGroundedCheck()
-	{
-		float _downScale = 0.8f;
-		while (!gameObject.IsDestroyed())
-		{
-			var _prevState = IsGrounded;
-			RaycastHit2D _hit = Physics2D.BoxCast(transform.position, _downScale * transform.localScale, 0, -1 * transform.up, transform.localScale.y + 0.1f, groundLayer);
-
-			if (_hit.collider != null) IsGrounded = true;
-			else IsGrounded = false;
-
-			if (_prevState != IsGrounded) GroundCheckChanged?.Invoke(this, new UniversalEventArgs<bool>() { CustomVariable = IsGrounded, Name = "IsGrounded" });
-
-			await Task.Delay(100);
-		}
-	}
 	void HopOnRope(Rope Rope)
 	{
 		IsOnRope = true;
@@ -136,7 +148,9 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (collision.gameObject.CompareTag("Death") && !IsOnRope)
 		{
+			IsDead = true;
 			GlobalScore.SetScore(playerScore.Score);
+			ShowMenu();
 			GameManager.Instance.GameOver();
 		}
 

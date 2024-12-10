@@ -11,7 +11,7 @@ public class ParticleController : MonoBehaviour
 		PlayerMovement pm = GetComponent<PlayerMovement>();
 		particle = ParticlesRef.GetComponent<ParticleSystem>();
 
-		pm.GroundCheckChanged += (s, e) =>
+		pm.groundedCheck.GroundCheckChanged += (s, e) =>
 		{
 			var em = particle.emission;
 			em.rateOverDistance = e.CustomVariable ? 1 : 0;
