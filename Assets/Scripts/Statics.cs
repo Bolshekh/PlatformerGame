@@ -33,7 +33,7 @@ public static class GlobalAudio
 {
 	public static event EventHandler<UniversalEventArgs<float>> AudioChange;
 
-	private static float vol;
+	private static float vol = 1f;
 	public static float AudioVolume
 	{
 		get => vol;
